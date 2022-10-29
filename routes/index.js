@@ -133,7 +133,6 @@ let executePythonV2 = function (fileName1, fileName2) {
       "public/images/" + fileName1,
       "-content_image",
       "public/images/" + fileName2,
-      "-output_image" + "public/images/" + fileName1 + ".out.png",
     ],
     { detached: true }
   );
