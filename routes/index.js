@@ -3,6 +3,8 @@ var router = express.Router();
 const { spawn } = require("child_process");
 let constants = require("../utils/const.js").constants;
 let errorCodes = require("../utils/errorCodes.js").errorCodes;
+//Import PythonShell module.
+const { PythonShell } = require("python-shell");
 
 var multer = require("multer");
 let fileFilter = function (req, file, cb) {
@@ -50,7 +52,7 @@ var upload = multer({
 }).array("files", constants.NUMBER_OF_ACCEPTED_FILES);
 
 router.post("/transfer", (req, res) => {
-  upload(req, res, function (err) {
+  upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
       res.status(400);
@@ -86,7 +88,7 @@ router.post("/transfer", (req, res) => {
         req.files.forEach(function (item, index) {
           responseFileNamesArray.push("http://localhost:3000/images/" + item.filename);
         });
-        executePythonV2(req.files[0].filename, req.files[1].filename);
+        await executePythonV3(req.files[0].filename, req.files[1].filename);
         res.json({ fileUrls: responseFileNamesArray });
       }
     }
@@ -152,6 +154,38 @@ let executePythonV2 = function (fileName1, fileName2) {
 
   python.on("close", (code) => {
     console.log("child process exited with code ", code);
+  });
+};
+
+let executePythonV3 = function (fileName1, fileName2) {
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: [
+      "-gpu=c",
+      "-num_iterations=100",
+      "-style_image",
+      "public/images/" + fileName1,
+      "-content_image",
+      "public/images/" + fileName2,
+    ],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("neural_style.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve({ success: true, result });
+      });
+    } catch {
+      console.log("error running python code");
+      reject();
+    }
   });
 };
 
