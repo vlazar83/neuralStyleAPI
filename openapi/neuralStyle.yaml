@@ -1,0 +1,55 @@
+openapi: "3.0.2"
+info:
+  title: Neural Style API
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /transfer:
+    post:
+      tags:
+        - transfer picture style
+      summary: Upload 2 pictures and start the style starnsfer
+      operationId: startNeuralStyleTransfer
+      responses:
+        "200":
+          description: successful operation
+          content:
+            image/png:
+              schema:
+                $ref: "#/components/responses/TransferResponse"
+        "405":
+          description: Invalid input
+      requestBody:
+        $ref: "#/components/requestBodies/Pictures"
+components:
+  requestBodies:
+    Pictures:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Pictures"
+  responses:
+    TransferResponse:
+      description: successful neurals style transfer
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TransferResponse"
+  schemas:
+    Pictures:
+      title: Pictures
+      description: Pictures array serving as input
+      type: object
+      properties:
+        filename:
+          type: array
+          items:
+            type: string
+            format: binary
+    TransferResponse:
+      title: result
+      description: result Picture after the transfer
+      type: string
+      format: binary
