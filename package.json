@@ -1,0 +1,26 @@
+{
+  "name": "neuralstyleapi",
+  "version": "1.0.0",
+  "description": "backend API to transfer styles between pictures using neural_style ML",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vlazar83/neuralStyleAPI.git"
+  },
+  "keywords": [
+    "ML",
+    "neural",
+    "style",
+    "picture",
+    "API"
+  ],
+  "author": "Lazar, Viktor",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vlazar83/neuralStyleAPI/issues"
+  },
+  "homepage": "https://github.com/vlazar83/neuralStyleAPI#readme"
+}
