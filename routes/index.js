@@ -3,6 +3,9 @@ var router = express.Router();
 const { spawn } = require("child_process");
 let constants = require("../utils/const.js").constants;
 let errorCodes = require("../utils/errorCodes.js").errorCodes;
+//Import PythonShell module.
+const { PythonShell } = require("python-shell");
+const uuid = require("uuid");
 
 var multer = require("multer");
 let fileFilter = function (req, file, cb) {
@@ -50,7 +53,8 @@ var upload = multer({
 }).array("files", constants.NUMBER_OF_ACCEPTED_FILES);
 
 router.post("/transfer", (req, res) => {
-  upload(req, res, function (err) {
+  console.log("request params:" + req.query.num_iterations);
+  upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
       res.status(400);
@@ -82,12 +86,12 @@ router.post("/transfer", (req, res) => {
       } else {
         // Everything went fine.
         console.log(req.files);
-        var responseFileNamesArray = [];
-        req.files.forEach(function (item, index) {
-          responseFileNamesArray.push("http://localhost:3000/images/" + item.filename);
-        });
-        executePythonV2(req.files[0].filename, req.files[1].filename);
-        res.json({ fileUrls: responseFileNamesArray });
+        var response = await createOutFolder();
+        console.log("Created folder: " + response.uuid);
+
+        var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
+        await executePythonV3(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
+        res.json({ fileUrl: responseFileUrl });
       }
     }
   });
@@ -152,6 +156,66 @@ let executePythonV2 = function (fileName1, fileName2) {
 
   python.on("close", (code) => {
     console.log("child process exited with code ", code);
+  });
+};
+
+let executePythonV3 = function (fileName1, fileName2, uuid, num_iterations) {
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: [
+      "-style_image",
+      "public/images/" + fileName1,
+      "-content_image",
+      "public/images/" + fileName2,
+      "-output_image",
+      "public/images/out/" + uuid + "/" + "out.png",
+      "-gpu=c",
+      "-num_iterations=" + num_iterations,
+    ],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("neural_style.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve({ success: true, result });
+      });
+    } catch {
+      console.log("error running python code");
+      reject();
+    }
+  });
+};
+
+let createOutFolder = function () {
+  var generatedUUID = uuid.v4();
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: ["-name", generatedUUID],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("create_out_folder.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        // console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve({ uuid: generatedUUID, success: true, result });
+      });
+    } catch {
+      console.log("error running python code");
+      reject();
+    }
   });
 };
 

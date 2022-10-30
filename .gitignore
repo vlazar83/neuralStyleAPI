@@ -110,4 +110,7 @@ script/__pycache__
 .DS_Store
 
 # neural models
-models/
+script/models/
+
+# generated out images
+public/images/out/
