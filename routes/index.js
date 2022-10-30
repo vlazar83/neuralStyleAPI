@@ -53,6 +53,7 @@ var upload = multer({
 }).array("files", constants.NUMBER_OF_ACCEPTED_FILES);
 
 router.post("/transfer", (req, res) => {
+  console.log("request params:" + req.query.num_iterations);
   upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
@@ -85,14 +86,12 @@ router.post("/transfer", (req, res) => {
       } else {
         // Everything went fine.
         console.log(req.files);
-        var responseFileNamesArray = [];
-        req.files.forEach(function (item, index) {
-          responseFileNamesArray.push("http://localhost:3000/images/" + item.filename);
-        });
         var response = await createOutFolder();
-        console.log(response);
-        await executePythonV3(req.files[0].filename, req.files[1].filename, response.uuid);
-        res.json({ fileUrls: responseFileNamesArray });
+        console.log("Created folder: " + response.uuid);
+
+        var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
+        await executePythonV3(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
+        res.json({ fileUrl: responseFileUrl });
       }
     }
   });
@@ -160,7 +159,7 @@ let executePythonV2 = function (fileName1, fileName2) {
   });
 };
 
-let executePythonV3 = function (fileName1, fileName2, uuid) {
+let executePythonV3 = function (fileName1, fileName2, uuid, num_iterations) {
   let options = {
     mode: "text",
     pythonOptions: ["-u"], // get print results in real-time
@@ -173,7 +172,7 @@ let executePythonV3 = function (fileName1, fileName2, uuid) {
       "-output_image",
       "public/images/out/" + uuid + "/" + "out.png",
       "-gpu=c",
-      "-num_iterations=100",
+      "-num_iterations=" + num_iterations,
     ],
   };
 

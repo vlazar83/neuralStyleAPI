@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "97faa228-db73-4a8c-9ee2-d533ebd396d1",
+		"name": "neuralStyle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "start transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": [
+								"/Users/I060663/git/com/neuralStyleAPI/public/images/cubist.jpg",
+								"/Users/I060663/git/com/neuralStyleAPI/public/images/brad_pitt.jpg"
+							]
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/transfer?num_iterations=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"transfer"
+					],
+					"query": [
+						{
+							"key": "num_iterations",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
