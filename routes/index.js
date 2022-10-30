@@ -5,6 +5,7 @@ let constants = require("../utils/const.js").constants;
 let errorCodes = require("../utils/errorCodes.js").errorCodes;
 //Import PythonShell module.
 const { PythonShell } = require("python-shell");
+const uuid = require("uuid");
 
 var multer = require("multer");
 let fileFilter = function (req, file, cb) {
@@ -88,7 +89,9 @@ router.post("/transfer", (req, res) => {
         req.files.forEach(function (item, index) {
           responseFileNamesArray.push("http://localhost:3000/images/" + item.filename);
         });
-        await executePythonV3(req.files[0].filename, req.files[1].filename);
+        var response = await createOutFolder();
+        console.log(response);
+        await executePythonV3(req.files[0].filename, req.files[1].filename, response.uuid);
         res.json({ fileUrls: responseFileNamesArray });
       }
     }
@@ -157,18 +160,20 @@ let executePythonV2 = function (fileName1, fileName2) {
   });
 };
 
-let executePythonV3 = function (fileName1, fileName2) {
+let executePythonV3 = function (fileName1, fileName2, uuid) {
   let options = {
     mode: "text",
     pythonOptions: ["-u"], // get print results in real-time
     scriptPath: "script",
     args: [
-      "-gpu=c",
-      "-num_iterations=100",
       "-style_image",
       "public/images/" + fileName1,
       "-content_image",
       "public/images/" + fileName2,
+      "-output_image",
+      "public/images/out/" + uuid + "/" + "out.png",
+      "-gpu=c",
+      "-num_iterations=100",
     ],
   };
 
@@ -181,6 +186,32 @@ let executePythonV3 = function (fileName1, fileName2) {
         console.log("result: ", result.toString());
         //result.send(result.toString());
         resolve({ success: true, result });
+      });
+    } catch {
+      console.log("error running python code");
+      reject();
+    }
+  });
+};
+
+let createOutFolder = function () {
+  var generatedUUID = uuid.v4();
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: ["-name", generatedUUID],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("create_out_folder.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        // console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve({ uuid: generatedUUID, success: true, result });
       });
     } catch {
       console.log("error running python code");
