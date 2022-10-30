@@ -90,12 +90,7 @@ router.post("/transfer", (req, res) => {
         console.log("Created folder: " + response.uuid);
 
         var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
-        await startNeuralTransfer(
-          req.files[0].filename,
-          req.files[1].filename,
-          response.uuid,
-          req.query.num_iterations
-        );
+        startNeuralTransfer(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
         res.json({ fileUrl: responseFileUrl });
       }
     }
