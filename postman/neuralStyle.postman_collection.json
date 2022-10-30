@@ -29,14 +29,14 @@
 			"response": []
 		},
 		{
-			"name": "start transfer",
+			"name": "start transfer item1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"var fileUrl = pm.response.json().fileUrl;",
-							"pm.collectionVariables.set(\"fileUrl\", fileUrl);"
+							"pm.collectionVariables.set(\"fileUrl1\", fileUrl);"
 						],
 						"type": "text/javascript"
 					}
@@ -79,7 +79,57 @@
 			"response": []
 		},
 		{
-			"name": "result picture",
+			"name": "start transfer item2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var fileUrl = pm.response.json().fileUrl;",
+							"pm.collectionVariables.set(\"fileUrl2\", fileUrl);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": [
+								"/Users/I060663/git/com/neuralStyleAPI/public/images/cubist.jpg",
+								"/Users/I060663/git/com/neuralStyleAPI/public/images/testImage2.jpeg"
+							]
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/transfer?num_iterations=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"transfer"
+					],
+					"query": [
+						{
+							"key": "num_iterations",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "result picture item1",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -91,19 +141,66 @@
 					"formdata": []
 				},
 				"url": {
-					"raw": "{{fileUrl}}",
+					"raw": "{{fileUrl1}}",
 					"host": [
-						"{{fileUrl}}"
+						"{{fileUrl1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "result picture item2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{fileUrl2}}",
+					"host": [
+						"{{fileUrl2}}"
 					]
 				}
 			},
 			"response": []
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
-			"key": "fileUrl",
-			"value": ""
+			"key": "fileUrl1",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "fileUrl2",
+			"value": "",
+			"type": "default"
 		}
 	]
 }
