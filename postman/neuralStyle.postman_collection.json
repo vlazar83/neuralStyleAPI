@@ -6,11 +6,80 @@
 	},
 	"item": [
 		{
+			"name": "JWT token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jwt = pm.response.json().access_token;",
+							"pm.collectionVariables.set(\"JWT\", jwt);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{client_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{client_id}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"audience\": \"https://neuralStyle/transfer\",\n    \"grant_type\": \"client_credentials\"\n}"
+				},
+				"url": {
+					"raw": "https://dev-sm4ylq004f4gs18a.eu.auth0.com/oauth/token",
+					"protocol": "https",
+					"host": [
+						"dev-sm4ylq004f4gs18a",
+						"eu",
+						"auth0",
+						"com"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "welcome page",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -43,6 +112,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -93,6 +172,16 @@
 				}
 			],
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -109,7 +198,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:3000/transfer?num_iterations=100",
+					"raw": "http://localhost:3000/transfer?num_iterations=200",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -121,7 +210,7 @@
 					"query": [
 						{
 							"key": "num_iterations",
-							"value": "100"
+							"value": "200"
 						}
 					]
 				}
@@ -134,6 +223,16 @@
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -155,6 +254,16 @@
 				"disableBodyPruning": true
 			},
 			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"body": {
@@ -199,6 +308,11 @@
 		},
 		{
 			"key": "fileUrl2",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "JWT",
 			"value": "",
 			"type": "default"
 		}

@@ -114,3 +114,6 @@ script/models/
 
 # generated out images
 public/images/out/
+
+# postman environment
+postman/neuralStyle.postman_environment.json
