@@ -157,9 +157,40 @@ let createOutFolder = function () {
   });
 };
 
+let countNrOfPytonProcesses = function () {
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: [],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("count_python_processes.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        // console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve(result[0]);
+      });
+    } catch {
+      console.log("error running count_python_processes.py code");
+      reject();
+    }
+  });
+};
+
 /* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
+});
+
+/* GET currently running number of python processes */
+router.get("/pythonNr", async function (req, res, next) {
+  var count = await countNrOfPytonProcesses();
+  res.json(count);
 });
 
 module.exports = router;
