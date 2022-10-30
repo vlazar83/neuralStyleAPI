@@ -52,49 +52,55 @@ var upload = multer({
   limits: { fileSize: constants.MAXFILESIZE },
 }).array("files", constants.NUMBER_OF_ACCEPTED_FILES);
 
-router.post("/transfer", (req, res) => {
+router.post("/transfer", async (req, res) => {
   console.log("num_iterations URL param:" + req.query.num_iterations);
-  upload(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      res.status(400);
-      if (err.code == errorCodes.LIMIT_UNEXPECTED_FILE) {
-        res.send({
-          errorCode: errorCodes.LIMIT_UNEXPECTED_FILE_ERROR_CODE,
-          error: errorCodes.LIMIT_UNEXPECTED_FILE_ERROR_MESSAGE,
-        });
-      } else if (err.code == errorCodes.LIMIT_FILE_SIZE) {
-        res.send({
-          errorCode: errorCodes.LIMIT_FILE_SIZE_ERROR_CODE,
-          error: errorCodes.LIMIT_FILE_SIZE_ERROR_MESSAGE,
-        });
-      } else {
-        res.send(err);
-      }
-    } else if (err) {
-      // An unknown error occurred when uploading.
-      res.status(500);
-      res.send(err);
-    } else {
-      // check if we received constants.NUMBER_OF_ACCEPTED_FILES files
-      if (req.files.length != constants.NUMBER_OF_ACCEPTED_FILES) {
+  var count = await countNrOfPytonProcesses();
+  if (parseInt(count) !== constants.MAX_NUMBER_OF_RUNNING_BACKGROUND_PROCESSES) {
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
         res.status(400);
-        res.json({
-          errorCode: errorCodes.INCORRECT_AMOUNT_OF_FILES_ERROR_CODE,
-          error: errorCodes.INCORRECT_AMOUNT_OF_FILES_ERROR_MESSAGE,
-        });
+        if (err.code == errorCodes.LIMIT_UNEXPECTED_FILE) {
+          res.send({
+            errorCode: errorCodes.LIMIT_UNEXPECTED_FILE_ERROR_CODE,
+            error: errorCodes.LIMIT_UNEXPECTED_FILE_ERROR_MESSAGE,
+          });
+        } else if (err.code == errorCodes.LIMIT_FILE_SIZE) {
+          res.send({
+            errorCode: errorCodes.LIMIT_FILE_SIZE_ERROR_CODE,
+            error: errorCodes.LIMIT_FILE_SIZE_ERROR_MESSAGE,
+          });
+        } else {
+          res.send(err);
+        }
+      } else if (err) {
+        // An unknown error occurred when uploading.
+        res.status(500);
+        res.send(err);
       } else {
-        // Everything went fine.
-        console.log(req.files);
-        var response = await createOutFolder();
-        console.log("Created folder: " + response.uuid);
+        // check if we received constants.NUMBER_OF_ACCEPTED_FILES files
+        if (req.files.length != constants.NUMBER_OF_ACCEPTED_FILES) {
+          res.status(400);
+          res.json({
+            errorCode: errorCodes.INCORRECT_AMOUNT_OF_FILES_ERROR_CODE,
+            error: errorCodes.INCORRECT_AMOUNT_OF_FILES_ERROR_MESSAGE,
+          });
+        } else {
+          // Everything went fine.
+          console.log(req.files);
+          var response = await createOutFolder();
+          console.log("Created folder: " + response.uuid);
 
-        var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
-        startNeuralTransfer(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
-        res.json({ fileUrl: responseFileUrl });
+          var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
+          startNeuralTransfer(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
+          res.json({ fileUrl: responseFileUrl });
+        }
       }
-    }
-  });
+    });
+  } else {
+    res.status(529); // Site is overloaded
+    res.send("The maximum amount of server side running background processes reached. Please try again later.");
+  }
 });
 
 let startNeuralTransfer = function (fileName1, fileName2, uuid, num_iterations) {
