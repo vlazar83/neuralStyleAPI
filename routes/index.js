@@ -1,11 +1,11 @@
-var express = require("express");
-var router = express.Router();
 const { spawn } = require("child_process");
-let constants = require("../utils/const.js").constants;
-let errorCodes = require("../utils/errorCodes.js").errorCodes;
-//Import PythonShell module.
 const { PythonShell } = require("python-shell");
 const uuid = require("uuid");
+
+var express = require("express");
+var router = express.Router();
+let constants = require("../utils/const.js").constants;
+let errorCodes = require("../utils/errorCodes.js").errorCodes;
 
 var multer = require("multer");
 let fileFilter = function (req, file, cb) {
@@ -53,7 +53,7 @@ var upload = multer({
 }).array("files", constants.NUMBER_OF_ACCEPTED_FILES);
 
 router.post("/transfer", (req, res) => {
-  console.log("request params:" + req.query.num_iterations);
+  console.log("num_iterations URL param:" + req.query.num_iterations);
   upload(req, res, async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
@@ -90,76 +90,19 @@ router.post("/transfer", (req, res) => {
         console.log("Created folder: " + response.uuid);
 
         var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
-        await executePythonV3(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
+        await startNeuralTransfer(
+          req.files[0].filename,
+          req.files[1].filename,
+          response.uuid,
+          req.query.num_iterations
+        );
         res.json({ fileUrl: responseFileUrl });
       }
     }
   });
 });
 
-router.get("/python", (req, res) => {
-  executePython(fileName1, fileName2);
-});
-
-let executePython = async function (fileName1, fileName2) {
-  var dataToSend;
-  // spawn new child process to call the python script
-  const python = spawn("python", ["script/filter.py", fileName2], { detached: true });
-  // collect data from script
-  python.stdout.on("data", (data) => {
-    console.log("pattern: ", data.toString());
-    dataToSend = data.toString();
-  });
-
-  python.stderr.on("data", (data) => {
-    console.error("err: ", data.toString());
-  });
-
-  python.on("error", (error) => {
-    console.error("error: ", error.message);
-  });
-
-  python.on("close", (code) => {
-    console.log("child process exited with code ", code);
-  });
-};
-
-let executePythonV2 = function (fileName1, fileName2) {
-  var dataToSend;
-  // spawn new child process to call the python script
-  const python = spawn(
-    "python",
-    [
-      "script/neural_style.py",
-      "-gpu=c",
-      "-num_iterations=100",
-      "-style_image",
-      "public/images/" + fileName1,
-      "-content_image",
-      "public/images/" + fileName2,
-    ],
-    { detached: true }
-  );
-  // collect data from script
-  python.stdout.on("data", (data) => {
-    console.log("pattern: ", data.toString());
-    dataToSend = data.toString();
-  });
-
-  python.stderr.on("data", (data) => {
-    console.error("err: ", data.toString());
-  });
-
-  python.on("error", (error) => {
-    console.error("error: ", error.message);
-  });
-
-  python.on("close", (code) => {
-    console.log("child process exited with code ", code);
-  });
-};
-
-let executePythonV3 = function (fileName1, fileName2, uuid, num_iterations) {
+let startNeuralTransfer = function (fileName1, fileName2, uuid, num_iterations) {
   let options = {
     mode: "text",
     pythonOptions: ["-u"], // get print results in real-time
