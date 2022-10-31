@@ -110,7 +110,9 @@ script/__pycache__
 .DS_Store
 
 # neural models
-script/models/
+script/models/nin_imagenet.pth
+script/models/vgg16-00b39a1b.pth
+script/models/vgg19-d01eb7cb.pth
 
 # generated out images
 public/images/out/
