@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y \
     curl
 RUN apt install nano
 
+# used in python scripts to detect if the python script is running inside the docker container
+ENV RUNS_INSIDE_CONTAINER Yes
+
 ARG NODE_VERSION=16.14.0
 ARG NODE_PACKAGE=node-v$NODE_VERSION-linux-arm64
 ARG NODE_HOME=/opt/$NODE_PACKAGE
