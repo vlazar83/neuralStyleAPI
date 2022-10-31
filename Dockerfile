@@ -36,6 +36,8 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN cd script && python3 models/download_models.py
+
 # nodejs server is listening on this port
 EXPOSE 3000
 

@@ -3,7 +3,12 @@
 ## For start run:
 
 cd script
+
 python3 models/download_models.py
+
+OR
+
+Use the docker repo dockerdoc83/neural-style-api:latest under (https://hub.docker.com/u/dockerdoc83) which has anaconda + nodejs setup + contains the above mentioned models
 
 ---
 
