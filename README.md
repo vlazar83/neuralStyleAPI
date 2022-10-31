@@ -4,7 +4,9 @@
 
 cd script
 
-python3 models/download_models.py
+python3 models/download_models.py  
+npm i  
+npm run start
 
 OR
 
