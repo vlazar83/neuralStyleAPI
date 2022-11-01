@@ -10,7 +10,9 @@ npm run start
 
 OR
 
-Use the docker repo dockerdoc83/neural-style-api:latest under (https://hub.docker.com/u/dockerdoc83) which has anaconda + nodejs setup + contains the above mentioned models
+Use the docker which has anaconda + nodejs setup + contains the above mentioned models:
+
+https://hub.docker.com/repository/docker/dockerdoc83/neural-style-api
 
 ---
 
