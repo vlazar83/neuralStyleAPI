@@ -117,5 +117,8 @@ script/models/vgg19-d01eb7cb.pth
 # generated out images
 public/images/out/
 
+# generated in images
+public/images/in/
+
 # postman environment
 postman/neuralStyle.postman_environment.json
