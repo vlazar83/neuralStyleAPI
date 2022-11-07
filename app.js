@@ -25,7 +25,7 @@ var jwtCheck = expressJwt({
   algorithms: ["RS256"],
 });
 
-app.use(jwtCheck);
+app.use("/transfer", jwtCheck);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
