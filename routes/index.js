@@ -99,6 +99,8 @@ router.post("/transfer", async (req, res) => {
     });
   } else {
     res.status(529); // Site is overloaded
+    res.statusMessage =
+      "The maximum amount of server side running background processes reached. Please try again later.";
     res.send("The maximum amount of server side running background processes reached. Please try again later.");
   }
 });
