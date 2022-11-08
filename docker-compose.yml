@@ -1,0 +1,12 @@
+version: '3'
+services:
+  angularFrontEnd:
+    image: dockerdoc83/neural-style-fe
+    restart: always
+    ports:
+      - 8088:80
+  nodejsBackEnd:
+    image: dockerdoc83/neural-style-api
+    restart: always
+    ports:
+      - 3000:3000
