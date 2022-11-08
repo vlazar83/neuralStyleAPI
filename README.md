@@ -14,6 +14,16 @@ Use the docker which has anaconda + nodejs setup + contains the above mentioned 
 
 https://hub.docker.com/repository/docker/dockerdoc83/neural-style-api
 
+The front end project repository is located here:
+
+https://hub.docker.com/repository/docker/dockerdoc83/neural-style-fe
+
+each project contains a docker-compose fle as well, so with a simple command:
+
+docker-compose up -d
+
+both the front end and the back end can be started.
+
 ---
 
 ## Used materials:
