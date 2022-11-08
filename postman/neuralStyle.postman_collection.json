@@ -6,6 +6,177 @@
 	},
 	"item": [
 		{
+			"name": "container",
+			"item": [
+				{
+					"name": "NrOfPythonProcesses Container",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"strictSSL": false
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://0.0.0.0:3000/pythonNr",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"pythonNr"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start transfer item1 Container",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var fileUrl = pm.response.json().fileUrl;",
+									"pm.collectionVariables.set(\"fileUrl1\", fileUrl);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": [
+										"/Users/I060663/git/com/neuralStyleAPI/public/images/cubist.jpg",
+										"/Users/I060663/git/com/neuralStyleAPI/public/images/Screenshot 2022-10-31 at 14.33.42.png"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "http://0.0.0.0:3000/transfer?num_iterations=100",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"transfer"
+							],
+							"query": [
+								{
+									"key": "num_iterations",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start transfer item1 Container Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var fileUrl = pm.response.json().fileUrl;",
+									"pm.collectionVariables.set(\"fileUrl1\", fileUrl);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": [
+										"/Users/I060663/git/com/neuralStyleAPI/public/images/cubist.jpg",
+										"/Users/I060663/git/com/neuralStyleAPI/public/images/brad_pitt.jpg"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "http://0.0.0.0:3000/transfer?num_iterations=100",
+							"protocol": "http",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "3000",
+							"path": [
+								"transfer"
+							],
+							"query": [
+								{
+									"key": "num_iterations",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "JWT token",
 			"event": [
 				{
@@ -93,6 +264,42 @@
 						"localhost"
 					],
 					"port": "3000"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "NrOfPythonProcesses",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:3000/pythonNr",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"pythonNr"
+					]
 				}
 			},
 			"response": []
