@@ -85,3 +85,63 @@ function onListening() {
   console.log("Listening on " + bind);
   debug("Listening on " + bind);
 }
+
+// monitoring
+
+var io = require('socket.io')(9500);
+var osm = require("os-monitor");
+//var process = require('node:process');
+
+io.on('connect', function (socket) {
+  //var count = await countNrOfPytonProcesses();
+    socket.emit('connected', {
+        status: 'connected',
+        type: osm.os.arch(), 
+        cpus: osm.os.cpus(),
+        freemem: osm.os.freemem(),
+        resource: process.resourceUsage(),
+        pythonCount: 2,
+    });
+});
+
+io.on('disconnect', function (socket) {
+    socket.emit('disconnected');
+});
+
+
+osm.start({
+    delay: 3000 // interval in ms between monitor cycles
+    , stream: false // set true to enable the monitor as a Readable Stream
+    , immediate: false // set true to execute a monitor cycle at start()
+}).pipe(process.stdout);
+
+
+// define handler that will always fire every cycle
+osm.on('monitor', function (monitorEvent) {
+    io.emit('os-update', monitorEvent);
+});
+
+let countNrOfPytonProcesses = function () {
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: [],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("count_python_processes.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        // console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve(result[0]);
+      });
+    } catch {
+      console.log("error running count_python_processes.py code");
+      reject();
+    }
+  });
+};
