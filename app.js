@@ -1,5 +1,6 @@
 var createError = require("http-errors");
 var express = require("express");
+var cors = require("cors");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
@@ -8,6 +9,13 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
 var app = express();
+
+// CORS setup
+
+var corsOptions = {
+  origin: "http://localhost:4200",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 // JWT authorization
 var { expressjwt: expressJwt } = require("express-jwt");
@@ -25,7 +33,7 @@ var jwtCheck = expressJwt({
   algorithms: ["RS256"],
 });
 
-app.use("/transfer", jwtCheck);
+app.use("/transfer", cors(corsOptions), jwtCheck);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
