@@ -25,7 +25,7 @@ let fileFilter = function (req, file, cb) {
 
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/images");
+    cb(null, "./public/images/in");
   },
   filename: (req, file, cb) => {
     console.log(file);
@@ -90,6 +90,9 @@ router.post("/transfer", async (req, res) => {
           console.log(req.files);
           var response = await createOutFolder();
           console.log("Created folder: " + response.uuid);
+
+          var moveResponse = await moveNewFilesToInFolder(response.uuid, req.files[0].filename, req.files[1].filename);
+          console.log("Files were moved successfully: " + response.success);
 
           var responseFileUrl = "http://localhost:3000/images/out/" + response.uuid + "/out.png";
           startNeuralTransfer(req.files[0].filename, req.files[1].filename, response.uuid, req.query.num_iterations);
@@ -157,6 +160,31 @@ let createOutFolder = function () {
         // console.log("result: ", result.toString());
         //result.send(result.toString());
         resolve({ uuid: generatedUUID, success: true, result });
+      });
+    } catch {
+      console.log("error running python code");
+      reject();
+    }
+  });
+};
+
+let moveNewFilesToInFolder = function (folderName, file1Name, file2Name) {
+  let options = {
+    mode: "text",
+    pythonOptions: ["-u"], // get print results in real-time
+    scriptPath: "script",
+    args: ["-folderName", folderName, "-file1Name", file1Name, "-file2Name", file2Name],
+  };
+
+  return new Promise((resolve, reject) => {
+    try {
+      PythonShell.run("move_new_files_into_in_folder.py", options, function (err, result) {
+        if (err) throw err;
+        // result is an array consisting of messages collected
+        //during execution of script.
+        // console.log("result: ", result.toString());
+        //result.send(result.toString());
+        resolve({ success: true, result });
       });
     } catch {
       console.log("error running python code");
