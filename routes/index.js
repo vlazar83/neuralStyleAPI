@@ -115,9 +115,9 @@ let startNeuralTransfer = function (fileName1, fileName2, uuid, num_iterations) 
     scriptPath: "script",
     args: [
       "-style_image",
-      "public/images/" + fileName1,
+      "public/images/in/" + uuid + "/" + fileName1,
       "-content_image",
-      "public/images/" + fileName2,
+      "public/images/in/" + uuid + "/" + fileName2,
       "-output_image",
       "public/images/out/" + uuid + "/" + "out.png",
       "-gpu=c",

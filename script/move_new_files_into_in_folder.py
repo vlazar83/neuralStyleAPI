@@ -13,5 +13,3 @@ def moveFilesIntoFolder(folderName, file1, file2):
 
 
 moveFilesIntoFolder(sys.argv[2], sys.argv[4], sys.argv[6])
-
-# shutil.move("../public/images/new1.txt","../public/images/in/zzz/new2.txt")
