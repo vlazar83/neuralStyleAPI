@@ -12,6 +12,23 @@
                 "<node_internals>/**"
             ],
             "type": "node"
-        }
+        },
+        {
+            "name": "CORS disabled Chrome",
+            "type": "chrome",
+            "request": "launch",
+            "preLaunchTask": "npm: start",
+            "url": "http://0.0.0.0:8088/",
+            "sourceMap": true,
+            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": ["--disable-web-security"],
+            "sourceMapPathOverrides": {
+              "webpack:/*": "${webRoot}/*",
+              "/./*": "${webRoot}/*",
+              "/src/*": "${webRoot}/*",
+              "/*": "*",
+              "/./~/*": "${webRoot}/node_modules/*"
+            }
+          },
     ]
 }
