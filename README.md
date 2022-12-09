@@ -24,6 +24,12 @@ docker-compose up -d
 
 both the front end and the back end can be started.
 
+ACHTUNG!
+```
+Do not start the server process (npm run start) in VSCode terminal, because the CPU and Memory usage will be limited,
+and the OS might terminate the python process once the neural transfer kicks in.
+```
+
 ---
 
 ## Used materials:
